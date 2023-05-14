@@ -16,13 +16,14 @@ fun main() {
     val pathPhonebook = "D:${separator}Kotlin${separator}directory.txt"
     val fileNamesForSearch = File(pathNamesForSearch)
     val filePhonebook = File(pathPhonebook)
+    val sizeOfSearch: Int = if (fileNamesForSearch.exists()) fileNamesForSearch.readLines().size else 0
 
     val finder = FinderAndSorter(filePhonebook, fileNamesForSearch)
 
-    val linearStartTime = System.currentTimeMillis()
-    println("Start searching (linear search)...")
-    val (foundLinear, sizeOfSearch) = finder.linearSearch()
-    val linearDuration = System.currentTimeMillis() - linearStartTime
+    val (foundLinear, linearDuration) = duration {
+        println("Start searching (linear search)...")
+        finder.linearSearch()
+    }
     println(
         "Found $foundLinear / $sizeOfSearch entries. Time taken: ${linearDuration / (1000 * 60) } min. " +
         "${linearDuration / 1000 % 60 } sec. ${ linearDuration % 1000 } ms."
@@ -35,9 +36,7 @@ fun main() {
     val bubbleSortDuration = System.currentTimeMillis() - bubbleSortStartTime
 
     if (bubbleSorted) {
-        val jumpStartTime = System.currentTimeMillis()
-        val foundJump = finder.jumpSearch(fileNamesForSearch)
-        val jumpDuration = System.currentTimeMillis() - jumpStartTime
+        val (foundJump, jumpDuration) = duration { finder.jumpSearch(fileNamesForSearch) }
         println(
             "Found $foundJump / $sizeOfSearch entries. Time taken: ${ (bubbleSortDuration + jumpDuration) / (1000 * 60) } min. " +
             "${ (bubbleSortDuration + jumpDuration) / 1000 % 60 } sec. ${ (bubbleSortDuration + jumpDuration) % 1000 } ms."
@@ -45,11 +44,12 @@ fun main() {
         println("Sorting time: ${ bubbleSortDuration / (1000 * 60) } min. ${ bubbleSortDuration / 1000 % 60 } sec. ${ bubbleSortDuration % 1000 } ms.")
         println("Searching time: ${ jumpDuration / (1000 * 60) } min. ${ jumpDuration / 1000 % 60 } sec. ${ jumpDuration % 1000} ms.")
     } else {
-        val newLinearStartTime = System.currentTimeMillis()
-        val (newFoundLinear, newSizeOfSearch) = finder.linearSearch()
-        val newLinearDuration = System.currentTimeMillis() - newLinearStartTime
+        val (newFoundLinear, newLinearDuration) = duration {
+            println("Start searching (linear search)...")
+            finder.linearSearch()
+        }
         println(
-            "Found $newFoundLinear / $newSizeOfSearch entries. Time taken: ${ (bubbleSortDuration + newLinearDuration) / (1000 * 60) } min. " +
+            "Found $newFoundLinear / $sizeOfSearch entries. Time taken: ${ (bubbleSortDuration + newLinearDuration) / (1000 * 60) } min. " +
                     "${ (bubbleSortDuration + newLinearDuration) / 1000 % 60 } sec. ${ (bubbleSortDuration + newLinearDuration) % 1000 } ms."
         )
         println("Sorting time: ${ bubbleSortDuration / (1000 * 60) } min. ${ bubbleSortDuration / 1000 % 60 } sec. ${ bubbleSortDuration % 1000 } ms. - STOPPED, moved to line")
@@ -64,9 +64,7 @@ fun main() {
     val quickSortStartTime = System.currentTimeMillis()
     finder.quickSort(phonebook, 0, phonebook.lastIndex)
     val quickSortDuration = System.currentTimeMillis() - quickSortStartTime
-    val binaryStartTime = System.currentTimeMillis()
-    val foundBinary = finder.binarySearch(phonebook, searchingNames)
-    val binaryDuration = System.currentTimeMillis() - binaryStartTime
+    val (foundBinary, binaryDuration) = duration { finder.binarySearch(phonebook, searchingNames) }
     println(
         "Found $foundBinary / $sizeOfSearch entries. Time taken: ${ (quickSortDuration + binaryDuration) / (1000 * 60) } min. " +
                 "${ (quickSortDuration + binaryDuration) / 1000 % 60 } sec. ${ (quickSortDuration + binaryDuration) % 1000 } ms."
@@ -78,15 +76,19 @@ fun main() {
     val hashTableStartTime = System.currentTimeMillis()
     val hashTable = hashTableMaker(filePhonebook)
     val hashTableDuration = System.currentTimeMillis() - hashTableStartTime
-    val findHashStartTime = System.currentTimeMillis()
-    val foundHashTable = hashTableFinder(hashTable, fileNamesForSearch)
-    val hashDuration = System.currentTimeMillis() - findHashStartTime
+    val (foundHashTable, hashDuration) = duration { hashTableFinder(hashTable, fileNamesForSearch) }
     println(
         "Found $foundHashTable / $sizeOfSearch entries. Time taken: ${ (hashTableDuration + hashDuration) / (1000 * 60) } min. " +
                 "${ (hashTableDuration + hashDuration) / 1000 % 60 } sec. ${ (hashTableDuration + hashDuration) % 1000 } ms."
     )
     println("Creating time: ${ hashTableDuration / (1000 * 60) } min. ${ hashTableDuration / 1000 % 60 } sec. ${ hashTableDuration % 1000 } ms.")
     println("Searching time: ${ hashDuration / (1000 * 60) } min. ${ hashDuration / 1000 % 60 } sec. ${ hashDuration % 1000} ms.")
+}
+
+inline fun duration(block: () -> Int): Pair<Int, Long> {
+    val startTime = System.currentTimeMillis()
+    val found = block()
+    return found to System.currentTimeMillis() - startTime
 }
 
 fun hashTableMaker(filePhonebook: File): HashMap<Int, String> {
@@ -234,7 +236,7 @@ class FinderAndSorter(private val filePhonebook: File, private val fileNamesForS
         return count
     }
 
-    fun linearSearch(): Pair<Int, Int> {
+    fun linearSearch(): Int {
         var found = 0
         val namesForSearch = mutableListOf<String>()
         if (fileNamesForSearch.exists() && filePhonebook.exists()) {
@@ -244,6 +246,6 @@ class FinderAndSorter(private val filePhonebook: File, private val fileNamesForS
                 if (phonebook.contains(name)) found++
             }
         } else println("Wrong files")
-        return found to namesForSearch.size
+        return found
     }
 }

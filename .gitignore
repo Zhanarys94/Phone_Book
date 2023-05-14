@@ -1,0 +1,4 @@
+# Project exclude paths
+/.gradle/
+/Phone Book (Kotlin)/task/build/
+/Phone Book (Kotlin)/task/build/classes/java/test/
