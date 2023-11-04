@@ -1,17 +1,17 @@
 type: edu
 files:
-- name: src/phonebook/Main.kt
-  visible: true
-  text: |
-    package phonebook
-
-    fun main() {
-        println("Hello, World!")
-    }
-  learner_created: false
-- name: test/PhoneBookTest.java
-  visible: false
-  text: "import org.hyperskill.hstest.stage.StageTest;\nimport org.hyperskill.hstest.testcase.CheckResult;\n\
+  - name: src/phonebook/Main.kt
+    visible: true
+    text: |
+      package phonebook
+      
+      fun main() {
+          println("Hello, World!")
+      }
+    learner_created: false
+  - name: test/PhoneBookTest.java
+    visible: false
+    text: "import org.hyperskill.hstest.stage.StageTest;\nimport org.hyperskill.hstest.testcase.CheckResult;\n\
     import org.hyperskill.hstest.testcase.TestCase;\n\nimport java.util.Arrays;\n\
     import java.util.List;\nimport java.util.regex.Matcher;\nimport java.util.regex.Pattern;\n\
     \npublic class PhoneBookTest extends StageTest {\n\n    private long timeOnTestStart;\n\
@@ -56,7 +56,7 @@ files:
     Real program working time was \" + realTime + \" ms, and your output contained\
     \ \" + estimatedTime + \"ms in total.\");\n        }\n        \n        return\
     \ CheckResult.correct();\n    }\n}\n"
-  learner_created: false
+    learner_created: false
 feedback_link: https://hyperskill.org/learn/step/7748#comment
 status: Solved
 feedback:
